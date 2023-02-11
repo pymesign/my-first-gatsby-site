@@ -3,7 +3,7 @@
  */
 module.exports = {
   siteMetadata: {
-    siteUrl: `https://www.yourdomain.tld`,
+    siteUrl: `https://myfirstgatsbysitemain93755.gatsbyjs.io/`,
   },
-  plugins: [],
+  plugins: [`gatsby-plugin-gatsby-cloud`],
 }
