@@ -1,6 +1,7 @@
 // Step 1: Import React
 import * as React from 'react'
 import Layout from './components/Layout'
+import Seo from './components/Seo'
 
 // Step 2: Define your component
 const ContactPage = () => {
@@ -11,7 +12,7 @@ const ContactPage = () => {
   )
 }
 
-export const Head = () => <title>Contact Me</title>
+export const Head = () => <Seo title="Contact Me" />
 
 // Step 3: Export your component
 export default ContactPage
