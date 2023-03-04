@@ -74,9 +74,7 @@ export default function Meme() {
             show_total: false,
             size: 40,
           }}
-          shareUrl={
-            document.getElementById("generated-image").querySelector("img").src
-          } // Obtener la URL del elemento img dentro del div oculto
+          shareUrl={generatedImage}
         />
       )}
       <div className="form">
