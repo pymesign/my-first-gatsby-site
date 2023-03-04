@@ -1,4 +1,7 @@
 import React from "react";
+import Draggable from "react-draggable";
+import html2canvas from "html2canvas";
+import { InlineShareButtons } from "sharethis-reactjs";
 
 export default function Meme() {
   const [meme, setMeme] = React.useState({
@@ -7,16 +10,8 @@ export default function Meme() {
     randomImage: "http://i.imgflip.com/1bij.jpg",
   });
   const [allMemes, setAllMemes] = React.useState([]);
+  const [generatedImage, setGeneratedImage] = React.useState(null);
 
-  /**
-useEffect takes a function as its parameter. If that function
-returns something, it needs to be a cleanup function. Otherwise,
-it should return nothing. If we make it an async function, it
-automatically retuns a promise instead of a function or nothing.
-Therefore, if you want to use async operations inside of useEffect,
-you need to define the function separately inside of the callback
-function, as seen below:
-*/
   React.useEffect(() => {
     async function getMeme() {
       const res = await fetch("https://api.imgflip.com/get_memes");
@@ -35,6 +30,22 @@ function, as seen below:
     }));
   }
 
+  function captureMeme() {
+    const meme = document.querySelector(".meme");
+    html2canvas(meme, { useCORS: true })
+      .then(function (canvas) {
+        const imgData = canvas.toDataURL("image/png");
+        const generatedImageDiv = document.getElementById("generated-image"); // Obtener el div oculto
+        const img = document.createElement("img"); // Crear un elemento img
+        img.src = imgData; // Asignar la imagen generada a la src del elemento img
+        generatedImageDiv.appendChild(img); // Agregar el elemento img al div oculto
+        setGeneratedImage(imgData);
+      })
+      .catch(function (error) {
+        console.log("Error capturing meme:", error);
+      });
+  }
+
   function handleChange(event) {
     const { name, value } = event.target;
     setMeme((prevMeme) => ({
@@ -45,6 +56,29 @@ function, as seen below:
 
   return (
     <main>
+      <div id="generated-image" style={{ display: "none" }}></div>{" "}
+      {/* Agregar un div oculto */}
+      {generatedImage && <img src={generatedImage} alt="meme" />}
+      {generatedImage && (
+        <InlineShareButtons
+          config={{
+            alignment: "center",
+            color: "social",
+            enabled: true,
+            font_size: 16,
+            labels: "cta",
+            language: "en",
+            networks: ["facebook", "twitter", "reddit", "linkedin", "whatsapp"],
+            padding: 12,
+            radius: 4,
+            show_total: false,
+            size: 40,
+          }}
+          shareUrl={
+            document.getElementById("generated-image").querySelector("img").src
+          } // Obtener la URL del elemento img dentro del div oculto
+        />
+      )}
       <div className="form">
         <input
           type="text"
@@ -67,10 +101,22 @@ function, as seen below:
         </button>
       </div>
       <div className="meme">
-        <img src={meme.randomImage} className="meme--image" alt="meme" />
-        <h2 className="meme--text top">{meme.topText}</h2>
-        <h2 className="meme--text bottom">{meme.bottomText}</h2>
+        <img
+          src={meme.randomImage}
+          className="meme--image"
+          alt="meme"
+          crossorigin="anonymous"
+        />
+        <Draggable>
+          <h2 className="meme--text top">{meme.topText}</h2>
+        </Draggable>
+        <Draggable>
+          <h2 className="meme--text bottom">{meme.bottomText}</h2>
+        </Draggable>
       </div>
+      <button className="form--button" onClick={captureMeme}>
+        Capture meme 📷
+      </button>
     </main>
   );
 }
